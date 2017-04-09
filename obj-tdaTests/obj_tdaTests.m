@@ -32,10 +32,15 @@
     // Use XCTAssert and related functions to verify your tests produce the correct results.
     
     TDASession *ses = [TDASession new];
-    BOOL okay = [ses loginWithUser:<#user#> pass:<#pass#> source:<#source#> version:<#version#>]
+    BOOL okay = [ses loginWithUser:<#user#> pass:<#pass#> source:<#source#> version:<#version#>];
     XCTAssert(okay,@"login failed");
     okay = [ses getBalancesAndPositions];
     XCTAssert(okay,@"get b&p failed");
+    TDAQuote *quote = [ses getQuote:@"jnug"];
+    XCTAssert(quote,@"get quote failed");
+    XCTAssert([quote.symbol isEqualToString:@"JNUG"],@"get quote failed");
+    XCTAssert(quote.last > 0,@"get quote failed");
+    XCTAssert(quote.last < 100,@"get quote failed");
     
 #define TEST_ORDER
 #ifdef TEST_ORDER

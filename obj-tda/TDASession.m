@@ -11,6 +11,7 @@
 #define LoginURL "https://apis.tdameritrade.com/apps/300/LogIn?source=%@&version=%@"
 #define LogoffURL "https://apis.tdameritrade.com/apps/100/LogOut?source=%@"
 #define BandPURL "https://apis.tdameritrade.com/apps/100/BalancesAndPositions?source=%@"
+#define QuoteURL "https://apis.tdameritrade.com/apps/100/Quote?source=%@&symbol=%@"
 #define ETURL "https://apis.tdameritrade.com/apps/100/EquityTrade?source=%@&orderstring=%@"
 #define CURL "https://apis.tdameritrade.com/apps/100/OrderCancel?source=%@&orderid=%@" // account id optional
 
@@ -128,6 +129,38 @@
     
     NSLog(@"get b&p successful");
     return YES;
+}
+
+- (TDAQuote *)getQuote:(NSString *)symbol
+{
+    NSString *urlString = [NSString stringWithFormat:@QuoteURL,_source,[symbol uppercaseString]];
+    NSURL *url = [NSURL URLWithString:urlString];
+    NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:url];
+    
+    NSXMLDocument *responseXML = [self _submitRequest:req];
+    if ( ! responseXML ) {
+        NSLog(@"nil response from cancel");
+        return NO;
+    }
+    
+    NSError *error = nil;
+    NSArray *results = [responseXML nodesForXPath:@"//result" error:&error];
+    if ( [results count] != 1 ) {
+        NSLog(@"error: quote results %lu",[results count]);
+        return nil;
+    } else if ( ! [[[results lastObject] stringValue] isEqualToString:@"OK"] ) {
+        NSLog(@"error: quote result '%@'",[[results lastObject] stringValue]);
+        return nil;
+    }
+    
+    NSArray *quotes = [responseXML nodesForXPath:@"//quote-list/quote" error:&error];
+    if ( [quotes count] != 1 ) {
+        NSLog(@"error: quotes %lu",[quotes count]);
+        return nil;
+    }
+    
+    TDAQuote *quote = [TDAQuote quoteWithXMLNode:[quotes lastObject]];
+    return quote;
 }
 
 - (BOOL)submitOrder:(TDAOrder *)order

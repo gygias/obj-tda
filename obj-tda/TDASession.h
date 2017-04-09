@@ -8,7 +8,8 @@
 
 #import <Foundation/Foundation.h>
 
-#include "TDAOrder.h"
+#import "TDAOrder.h"
+#import "TDAQuote.h"
 
 @interface TDASession : NSObject
 {
@@ -19,8 +20,13 @@
 - (BOOL)loginWithUser:(NSString *)user pass:(NSString *)pass source:(NSString *)source version:(NSString *)version;
 - (BOOL)logoff;
 
+// account
 - (BOOL)getBalancesAndPositions;
 
+// info
+- (TDAQuote *)getQuote:(NSString *)symbol;
+
+// orders
 - (BOOL)submitOrder:(TDAOrder *)order;
 - (BOOL)cancelOrder:(TDAOrder *)order;
 
