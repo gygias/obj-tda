@@ -35,6 +35,17 @@
     }
     
     NSError *error = nil;
+    NSArray *results = [responseXML nodesForXPath:@"//result" error:&error];
+    if ( ! results ) {
+        NSLog(@"failed to parse login result: %@: %@",error,responseXML);
+        return NO;
+    }
+    
+    if ( ! [[[results lastObject] stringValue] isEqualToString:@"OK"] ) {
+        NSLog(@"error: login: ? %@",[[results lastObject] stringValue]);
+        return NO;
+    }
+    
     NSArray *accountIDsXML = [responseXML nodesForXPath:@"//xml-log-in/accounts/account/account-id" error:&error];
     if ( ! accountIDsXML ) {
         NSLog(@"failed to parse accounts: %@",error);
@@ -81,6 +92,7 @@
         return NO;
     }
     
+    NSLog(@"logoff successful");
     return YES;
 }
 
@@ -102,6 +114,19 @@
         return NO;
     }
     
+    NSError *error = nil;
+    NSArray *results = [responseXML nodesForXPath:@"//result" error:&error];
+    if ( [results count] != 1 ) {
+        NSLog(@"error: results != 1 on b&p");
+        return NO;
+    }
+    
+    if ( ! [[[results lastObject] stringValue] isEqualToString:@"OK"] ) {
+        NSLog(@"error: b&p result: %@",[[results lastObject] stringValue]);
+        return NO;
+    }
+    
+    NSLog(@"get b&p successful");
     return YES;
 }
 
@@ -121,6 +146,9 @@
     }
     
     NSError *error = nil;
+    
+#warning check 'result'
+    
     NSArray *orderIDs = [responseXML nodesForXPath:@"//order-wrapper/order/order-id" error:&error];
     if ( [orderIDs count] != 1 ) {
         NSLog(@"error: got %lu order ids",[orderIDs count]);
@@ -130,6 +158,7 @@
     order.orderID = [[orderIDs lastObject] stringValue];
     order.response = responseXML;
     
+    NSLog(@"submit order '%@' successful",order.orderID);
     return YES;
 }
 
@@ -162,6 +191,7 @@
         return NO;
     }
     
+    NSLog(@"cancel order '%@' successful",order.orderID);
     return YES;
 }
 
@@ -169,13 +199,12 @@
 {
     __block BOOL okay = NO;
     __block NSString *responseString;
+    __block NSURLResponse *response;
     dispatch_semaphore_t sem = dispatch_semaphore_create(0);
-    __unused NSURLSessionDataTask *sesTask = [[NSURLSession sharedSession] dataTaskWithRequest:req completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
-        NSInteger dataLength = [data length];
-        sleep(1);
-        if ( dataLength != [data length] ) NSLog(@"WOEIFJ:WOEIJFO:EWIJFO:WIEJF:OWIEJF:OWIEJF:OWIEJF:OWIEJF:OWEIJFW:OEIFJ:WOEIFJ:WOEIFJW:EOIFJ");
+    __unused NSURLSessionDataTask *sesTask = [[NSURLSession sharedSession] dataTaskWithRequest:req completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response_, NSError * _Nullable error) {
+        response = response_;
         responseString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-        NSLog(@"got %lu bytes:\nresponse: %@\nerror: %@\n=>[%ld] %@",[data length],response,error,[data length],responseString);
+        NSLog(@"response[%ld]: %@",[data length],error);
         okay = ([(NSHTTPURLResponse *)response statusCode] == 200); // and response data includes "OK"
         dispatch_semaphore_signal(sem);
     }];
@@ -184,11 +213,11 @@
     dispatch_semaphore_wait(sem,DISPATCH_TIME_FOREVER);
     
     if ( ! okay ) {
-        NSLog(@"login failed");
+        NSLog(@"request failed: %@",response);
         return NO;
     }
     if ( ! responseString ) {
-        NSLog(@"nil response string");
+        NSLog(@"request got nil response string: %@",response);
         return NO;
     }
     
