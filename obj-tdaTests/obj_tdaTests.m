@@ -32,26 +32,26 @@
     // Use XCTAssert and related functions to verify your tests produce the correct results.
     
     TDASession *ses = [TDASession new];
-    BOOL okay = [ses loginWithUser:<#user#> pass:<#pass#> source:<#source#> version:<#version#>];
+    BOOL okay = [ses loginWithUser:<#user#> pass:<#pass#> source:<#source#> version:<#version#>]
     XCTAssert(okay,@"login failed");
-    //okay = [ses getBalancesAndPositions];
-    //XCTAssert(okay,@"get b&p failed");
+    okay = [ses getBalancesAndPositions];
+    XCTAssert(okay,@"get b&p failed");
     
-//#define TEST_ORDER
+#define TEST_ORDER
 #ifdef TEST_ORDER
     TDAOrder *order = [TDAOrder new];
-    order.symbol = @"dgaz";
+    order.symbol = @"aapl";
     order.action = Buy;
     order.type = LimitOrder;
     order.quantity = 100;
-    order.price = 2.5;
+    order.price = 1.5;
     order.tif = DayTIF;
     
     okay = [ses submitOrder:order];
     XCTAssert(okay,@"submit order failed");
     
     if ( okay ) {
-        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:3]];
+        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:2]];
         
         okay = [ses cancelOrder:order];
         XCTAssert(okay,@"cancel order failed");
