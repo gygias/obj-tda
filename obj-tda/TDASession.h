@@ -38,6 +38,7 @@
 
 // orders
 - (BOOL)submitOrder:(TDAOrder *)order;
+- (BOOL)getOrderStatus:(TDAOrder *)order;
 - (BOOL)cancelOrder:(TDAOrder *)order;
 
 @end

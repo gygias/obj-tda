@@ -28,6 +28,22 @@ typedef enum {
     GTCExtTIF = 2
 } TimeInForce;
 
+typedef enum {
+    New = 0,
+    Submitted = 1, // sent, remote status not yet known
+    Open = 2,
+    Expired = 3,
+    PartialFilled = 4,
+    Filled = 5,
+    Pending = 6,
+    PendingCancel = 7,
+    Canceled = 8,
+    PendingReplace = 9,
+    Replaced = 10,
+    Received = 11,
+    ReviewRelease = 12 // manual review
+} OrderStatus;
+
 @interface TDAOrder : NSObject
 
 @property NSString *symbol;
@@ -39,12 +55,19 @@ typedef enum {
 
 // volatile
 @property NSString *orderID;
+@property OrderStatus status;
+@property BOOL cancelable;
+@property BOOL editable;
 @property NSXMLDocument *response;
-@property BOOL executed;
+
+// debug
+@property NSString *orderString;
 
 // synthesized
 @property float estimatedCost;
 
 - (NSString *)orderStringWithAccountID:(NSString *)accountID;
+
+- (BOOL)_updateStatus:(NSXMLDocument *)statusXML;
 
 @end

@@ -20,6 +20,7 @@
         self.tif = INVALID_ORDER;
         self.price = INVALID_ORDER;
         self.quantity = INVALID_ORDER;
+        self.status = New;
     }
     return self;
 }
@@ -88,6 +89,63 @@
     [orderString appendFormat:@"~quantity=%d",self.quantity];
     
     return orderString;
+}
+
+- (BOOL)_updateStatus:(NSXMLDocument *)statusXML
+{
+    BOOL okay = YES;
+    NSError *error = nil;
+    NSArray *nodes = [statusXML nodesForXPath:@"//display-status" error:&error];
+    if ( [nodes count] != 1 ) {
+        NSLog(@"error: %ld display status for order %@",[nodes count],self.orderID);
+        return NO;
+    }
+    
+    NSString *displayStatus = [[nodes lastObject] stringValue];
+    if ( [displayStatus isEqualToString:@"Open"] )
+        self.status = Open;
+    else if ( [displayStatus isEqualToString:@"Filled"] )
+        self.status = Filled;
+    else if ( [displayStatus isEqualToString:@"Expired"] )
+        self.status = Expired;
+    else if ( [displayStatus isEqualToString:@"Pending"] )
+        self.status = Pending;
+    else if ( [displayStatus isEqualToString:@"Pending Cancel"] )
+        self.status = PendingCancel;
+    else if ( [displayStatus isEqualToString:@"Canceled"] )
+        self.status = Canceled;
+    else if ( [displayStatus isEqualToString:@"Pending Replace"] )
+        self.status = PendingReplace;
+    else if ( [displayStatus isEqualToString:@"Replaced"] )
+        self.status = Replaced;
+    else if ( [displayStatus isEqualToString:@"Received"] )
+        self.status = Received;
+    else if ( [displayStatus isEqualToString:@"Review/Release"] )
+        self.status = ReviewRelease;
+    else {
+        NSLog(@"*** warning: unknown display status for %@: %@",self.orderID,displayStatus);
+        okay = NO;
+    }
+    
+    nodes = [statusXML nodesForXPath:@"//cancelable" error:&error];
+    if ( [nodes count] != 1 ) {
+        NSLog(@"error: %ld cancelable for order %@",[nodes count],self.orderID);
+        okay = NO;
+    }
+    
+    self.cancelable = [[[nodes lastObject] stringValue] boolValue];
+    
+    nodes = [statusXML nodesForXPath:@"//editable" error:&error];
+    if ( [nodes count] != 1 ) {
+        NSLog(@"error: %ld cancelable for order %@",[nodes count],self.orderID);
+        okay = NO;
+    }
+    
+    self.editable = [[[nodes lastObject] stringValue] boolValue];
+    
+    NSLog(@"updated order %@ - %@: %@cancelable, %@editable, %@",self.orderID,self.orderString,self.cancelable?@"":@"non-",self.editable?@"":@"non-",displayStatus);
+    
+    return okay;
 }
 
 @end

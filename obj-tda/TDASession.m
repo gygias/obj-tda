@@ -16,6 +16,7 @@
 #define CURL "https://apis.tdameritrade.com/apps/100/OrderCancel?source=%@&orderid=%@" // account id optional
 #define PHURL "https://apis.tdameritrade.com/apps/100/PriceHistory?source=%@&requestidentifiertype=SYMBOL"
 #define KAURL "https://apis.tdameritrade.com/apps/KeepAlive?source=%@"
+#define OSURL "https://apis.tdameritrade.com/apps/100/OrderStatus?source=%@"
 
 @implementation TDASession
 
@@ -41,18 +42,13 @@
         return NO;
     }
     
+    okay = [self _checkResult:responseXML :@"OK"];
+    if ( ! okay ) {
+        NSLog(@"%s: result not OK",__PRETTY_FUNCTION__);
+        return NO;
+    }
+    
     NSError *error = nil;
-    NSArray *results = [responseXML nodesForXPath:@"//result" error:&error];
-    if ( ! results ) {
-        NSLog(@"failed to parse login result: %@: %@",error,responseXML);
-        return NO;
-    }
-    
-    if ( ! [[[results lastObject] stringValue] isEqualToString:@"OK"] ) {
-        NSLog(@"error: login: ? %@",[[results lastObject] stringValue]);
-        return NO;
-    }
-    
     NSArray *accountIDsXML = [responseXML nodesForXPath:@"//xml-log-in/accounts/account/account-id" error:&error];
     if ( ! accountIDsXML ) {
         NSLog(@"failed to parse accounts: %@",error);
@@ -116,15 +112,9 @@
         return NO;
     }
     
-    NSError *error = nil;
-    NSArray *results = [responseXML nodesForXPath:@"//result" error:&error];
-    if ( ! results ) {
-        NSLog(@"failed to parse logoff result: %@",error);
-        return NO;
-    }
-    
-    if ( ! [[[results lastObject] stringValue] isEqualToString:@"LoggedOut"] ) {
-        NSLog(@"error: logoff: ? %@",responseXML);
+    okay = [self _checkResult:responseXML :@"LoggedOut"];
+    if ( ! okay ) {
+        NSLog(@"%s: result not OK",__PRETTY_FUNCTION__);
         return NO;
     }
     
@@ -154,15 +144,9 @@
         return NO;
     }
     
-    NSError *error = nil;
-    NSArray *results = [responseXML nodesForXPath:@"//result" error:&error];
-    if ( [results count] != 1 ) {
-        NSLog(@"error: results != 1 on b&p");
-        return NO;
-    }
-    
-    if ( ! [[[results lastObject] stringValue] isEqualToString:@"OK"] ) {
-        NSLog(@"error: b&p result: %@",[[results lastObject] stringValue]);
+    okay = [self _checkResult:responseXML :@"OK"];
+    if ( ! okay ) {
+        NSLog(@"%s: result not OK",__PRETTY_FUNCTION__);
         return NO;
     }
     
@@ -186,16 +170,13 @@
         return NO;
     }
     
-    NSError *error = nil;
-    NSArray *results = [responseXML nodesForXPath:@"//result" error:&error];
-    if ( [results count] != 1 ) {
-        NSLog(@"error: quote results %lu",[results count]);
-        return nil;
-    } else if ( ! [[[results lastObject] stringValue] isEqualToString:@"OK"] ) {
-        NSLog(@"error: quote result '%@'",[[results lastObject] stringValue]);
-        return nil;
+    okay = [self _checkResult:responseXML :@"OK"];
+    if ( ! okay ) {
+        NSLog(@"%s: result not OK",__PRETTY_FUNCTION__);
+        return NO;
     }
     
+    NSError *error = nil;
     NSArray *quotes = [responseXML nodesForXPath:@"//quote-list/quote" error:&error];
     if ( [quotes count] != 1 ) {
         NSLog(@"error: quotes %lu",[quotes count]);
@@ -352,20 +333,74 @@
         return NO;
     }
     
-    NSError *error = nil;
-    
-#warning check 'result'
-    
-    NSArray *orderIDs = [responseXML nodesForXPath:@"//order-wrapper/order/order-id" error:&error];
-    if ( [orderIDs count] != 1 ) {
-        NSLog(@"error: got %lu order ids",[orderIDs count]);
+    okay = [self _checkResult:responseXML :@"OK"];
+    if ( ! okay ) {
+        NSLog(@"%s: result not OK",__PRETTY_FUNCTION__);
         return NO;
     }
     
-    order.orderID = [[orderIDs lastObject] stringValue];
+    NSError *error = nil;
+    NSArray *nodes = [responseXML nodesForXPath:@"//order-wrapper/order/order-id" error:&error];
+    if ( [nodes count] != 1 ) {
+        NSLog(@"error: got %lu order ids",[nodes count]);
+        return NO;
+    }
+    
+    order.orderID = [[nodes lastObject] stringValue];
+    
+    nodes = [responseXML nodesForXPath:@"//order-wrapper/orderstring" error:&error];
+    if ( [nodes count] != 1 ) {
+        NSLog(@"error: got %lu orderstrings",[nodes count]);
+        return NO;
+    }
+    
+    order.orderString = [[nodes lastObject] stringValue];
+    
     order.response = responseXML;
+    order.status = Submitted;
     
     NSLog(@"submit order '%@' successful",order.orderID);
+    return YES;
+}
+
+- (BOOL)getOrderStatus:(TDAOrder *)order
+{
+    if ( ! order.orderID ) {
+        NSLog(@"can't check status of unsubmitted order %@",order);
+        return NO;
+    }
+    
+    NSString *urlString = [NSString stringWithFormat:@OSURL,_source];
+    // order id is an optional filter
+    urlString = [urlString stringByAppendingFormat:@"&orderid=%@",order.orderID];
+    NSURL *url = [NSURL URLWithString:urlString];
+    NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:url];
+    
+    NSXMLDocument *responseXML = nil;
+    BOOL okay = [self _submitRequest:req :&responseXML :YES];
+    if ( ! okay ) {
+        NSLog(@"order status request failed");
+        return NO;
+    } else if ( ! responseXML ) {
+        NSLog(@"order status response xml nil");
+        return NO;
+    }
+    
+    okay = [self _checkResult:responseXML :@"OK"];
+    if ( ! okay ) {
+        NSLog(@"%s: result not OK",__PRETTY_FUNCTION__);
+        return NO;
+    }
+    
+    NSError *error = nil;
+    NSArray *orders = [responseXML nodesForXPath:@"//orderstatus-list/orderstatus" error:&error];
+    if ( [orders count] != 1 ) {
+        NSLog(@"error: %ld orders from status check",[orders count]);
+        return NO;
+    }
+        
+    [order _updateStatus:[orders lastObject]];
+    
     return YES;
 }
 
@@ -390,15 +425,9 @@
         return NO;
     }
     
-    NSError *error = nil;
-    NSArray *results = [responseXML nodesForXPath:@"//result" error:&error];
-    if ( [results count] != 1 ) {
-        NSLog(@"error: got %lu results on cancel",[results count]);
-        return NO;
-    }
-    
-    if ( ! [[[results lastObject] stringValue] isEqualToString:@"OK"] ) {
-        NSLog(@"cancel order failed");
+    okay = [self _checkResult:responseXML :@"OK"];
+    if ( ! okay ) {
+        NSLog(@"%s: result not OK",__PRETTY_FUNCTION__);
         return NO;
     }
     
@@ -455,6 +484,22 @@
     }
     
     *obj = responseXML;
+    //NSLog(@"%@",responseXML);
+    
+    return YES;
+}
+
+- (BOOL)_checkResult:(NSXMLDocument *)xml :(NSString *)okString
+{
+    NSError *error = nil;
+    NSArray *results = [xml nodesForXPath:@"//result" error:&error];
+    if ( [results count] != 1 ) {
+        NSLog(@"error: got %lu results",[results count]);
+        return NO;
+    }
+    
+    if ( ! [[[results lastObject] stringValue] isEqualToString:okString] )
+        return NO;
     
     return YES;
 }

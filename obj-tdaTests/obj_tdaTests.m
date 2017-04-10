@@ -58,7 +58,7 @@
     XCTAssert(quote.last > 0,@"get quote failed");
     XCTAssert(quote.last < 100,@"get quote failed");
     
-//#define TEST_ORDER
+#define TEST_ORDER
 #ifdef TEST_ORDER
     TDAOrder *order = [TDAOrder new];
     order.symbol = @"aapl";
@@ -73,6 +73,12 @@
     
     if ( okay ) {
         [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:2]];
+        
+        okay = [ses getOrderStatus:order];
+        XCTAssert(okay,@"order status failed");
+        XCTAssert(order.status == Open,@"order is not open");
+        XCTAssert(order.editable,@"order is not editable");
+        XCTAssert(order.cancelable,@"order is not cancelable");
         
         okay = [ses cancelOrder:order];
         XCTAssert(okay,@"cancel order failed");
