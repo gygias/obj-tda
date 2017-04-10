@@ -14,6 +14,7 @@
 #define QuoteURL "https://apis.tdameritrade.com/apps/100/Quote?source=%@&symbol=%@"
 #define ETURL "https://apis.tdameritrade.com/apps/100/EquityTrade?source=%@&orderstring=%@"
 #define CURL "https://apis.tdameritrade.com/apps/100/OrderCancel?source=%@&orderid=%@" // account id optional
+#define PHURL "https://apis.tdameritrade.com/apps/100/PriceHistory?source=%@&requestidentifiertype=SYMBOL"
 
 @implementation TDASession
 
@@ -29,9 +30,13 @@
     [req setHTTPBody:body];
     [req setValue:@"application/x-www-form-urlencoded" forHTTPHeaderField:@"Content-Type"];
     
-    NSXMLDocument *responseXML = [self _submitRequest:req];
-    if ( ! responseXML ) {
-        NSLog(@"nil response from cancel");
+    NSXMLDocument *responseXML = nil;
+    BOOL okay = [self _submitRequest:req :&responseXML :YES];
+    if ( ! okay ) {
+        NSLog(@"request failed");
+        return NO;
+    } else if ( ! responseXML ) {
+        NSLog(@"response xml nil");
         return NO;
     }
     
@@ -75,9 +80,13 @@
     NSURL *url = [NSURL URLWithString:urlString];
     NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:url];
     
-    NSXMLDocument *responseXML = [self _submitRequest:req];
-    if ( ! responseXML ) {
-        NSLog(@"nil response from cancel");
+    NSXMLDocument *responseXML = nil;
+    BOOL okay = [self _submitRequest:req :&responseXML :YES];
+    if ( ! okay ) {
+        NSLog(@"request failed");
+        return NO;
+    } else if ( ! responseXML ) {
+        NSLog(@"response xml nil");
         return NO;
     }
     
@@ -109,9 +118,13 @@
     //[req setHTTPMethod:@"POST"];
     //[req setHTTPBody:body];
     
-    NSXMLDocument *responseXML = [self _submitRequest:req];
-    if ( ! responseXML ) {
-        NSLog(@"nil response from cancel");
+    NSXMLDocument *responseXML = nil;
+    BOOL okay = [self _submitRequest:req :&responseXML :YES];
+    if ( ! okay ) {
+        NSLog(@"request failed");
+        return NO;
+    } else if ( ! responseXML ) {
+        NSLog(@"response xml nil");
         return NO;
     }
     
@@ -137,9 +150,13 @@
     NSURL *url = [NSURL URLWithString:urlString];
     NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:url];
     
-    NSXMLDocument *responseXML = [self _submitRequest:req];
-    if ( ! responseXML ) {
-        NSLog(@"nil response from cancel");
+    NSXMLDocument *responseXML = nil;
+    BOOL okay = [self _submitRequest:req :&responseXML :YES];
+    if ( ! okay ) {
+        NSLog(@"request failed");
+        return NO;
+    } else if ( ! responseXML ) {
+        NSLog(@"response xml nil");
         return NO;
     }
     
@@ -159,8 +176,135 @@
         return nil;
     }
     
+    NSArray *errors = [[quotes lastObject] nodesForXPath:@"//error" error:&error];
+    if ( [[[errors lastObject] stringValue] length] ) {
+        NSLog(@"error: quote error '%@",[[errors lastObject] stringValue]);
+        return nil;
+    }
+    
     TDAQuote *quote = [TDAQuote quoteWithXMLNode:[quotes lastObject]];
     return quote;
+}
+
+- (TDAPriceHistory *)getPriceHistory:(NSString *)symbol
+                                    :(IntervalType)interval
+                                    :(int)duration
+                                    :(PeriodType)periodType
+                                    :(int)period
+                                    :(NSDate *)startDate
+                                    :(NSDate *)endDate
+                                    :(BOOL)extended
+{
+    NSString *urlString = [NSString stringWithFormat:@PHURL,_source];
+    
+    // multiple symbols in one request with comma-space. "foo, bar"
+    urlString = [urlString stringByAppendingFormat:@"&requestvalue=%@",[symbol uppercaseString]];
+    
+    switch(interval) {
+        case MinuteInterval:
+            if ( duration != 1 && duration != 5 && duration != 10 && duration != 15 && duration != 30 ) {
+                NSLog(@"invalid duration %d for minute interval",duration);
+                return nil;
+            }
+            urlString = [urlString stringByAppendingFormat:@"&intervaltype=MINUTE"];
+            break;
+        case DayInterval:
+            if ( duration != 1 ) {
+                NSLog(@"invalid duration %d for day interval",duration);
+                return nil;
+            }
+            urlString = [urlString stringByAppendingFormat:@"&intervaltype=DAILY"];
+            break;
+        case WeekInterval:
+            if ( duration != 1 ) {
+                NSLog(@"invalid duration %d for week interval",duration);
+                return nil;
+            }
+            urlString = [urlString stringByAppendingFormat:@"&intervaltype=WEEKLY"];
+            break;
+        case MonthInterval:
+            if ( duration != 1 ) {
+                NSLog(@"invalid duration %d for month interval",duration);
+                return nil;
+            }
+            urlString = [urlString stringByAppendingFormat:@"&intervaltype=MONTHLY"];
+            break;
+        default:
+            NSLog(@"invalid interval type");
+            return nil;
+    }
+    urlString = [urlString stringByAppendingFormat:@"&intervalduration=%d",duration];
+    
+    switch(periodType) {
+        case DayPeriod:
+            if ( ( period < 1 || period > 5 ) && period != 10 ) {
+                NSLog(@"invalid day period %d",period);
+                return nil;
+            }
+            urlString = [urlString stringByAppendingFormat:@"&periodtype=DAY"];
+            break;
+        case MonthPeriod:
+            if ( ( period < 1 || period > 3 ) && period != 6 ) {
+                NSLog(@"invalid month period %d",period);
+                return nil;
+            }
+            urlString = [urlString stringByAppendingFormat:@"&periodtype=MONTH"];
+            break;
+        case YearPeriod:
+            if ( ( period < 1 || period > 3 ) && period != 5 && period != 10 && period != 15 && period != 20 ) {
+                NSLog(@"invalid year period %d",period);
+                return nil;
+            }
+            urlString = [urlString stringByAppendingFormat:@"&periodtype=YEAR"];
+            break;
+        case YTDPeriod:
+            if ( period != 1 ) {
+                NSLog(@"invalid ytd period %d",period);
+                return nil;
+            }
+            urlString = [urlString stringByAppendingFormat:@"&periodtype=YTD"];
+            break;
+        default:
+            NSLog(@"invalid period type");
+            return nil;
+    }
+    urlString = [urlString stringByAppendingFormat:@"&period=%d",period];
+    
+    NSDateFormatter *dF = [NSDateFormatter new];
+    dF.dateFormat = @"yyyyMMdd";
+    if ( startDate )
+        urlString = [urlString stringByAppendingFormat:@"&startdate=%@",[dF stringFromDate:startDate]];
+    if ( endDate ) {
+        if ( ! startDate ) {
+            NSLog(@"invalid PH request: endDate requires startDate");
+            return nil;
+        }
+        urlString = [urlString stringByAppendingFormat:@"&enddate=%@",[dF stringFromDate:endDate]];
+    }
+    
+    urlString = [urlString stringByAppendingFormat:@"&extended=%d",extended];
+    
+    NSURL *url = [NSURL URLWithString:urlString];
+    NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:url];
+    
+    NSData *bytes = nil;
+    BOOL okay = [self _submitRequest:req :&bytes :NO];
+    if ( ! okay ) {
+        NSLog(@"request failed: %@",bytes?[[NSString alloc] initWithBytes:[bytes bytes] + 2 length:[bytes length] - 2 encoding:NSUTF8StringEncoding]:@"(null)");
+        return NO;
+    }
+    
+    // failure indicated in http response code checked in _submitRequest:
+    
+    TDAPriceHistory *ph = [TDAPriceHistory new];
+    ph.symbol = [symbol uppercaseString];
+    ph.interval = interval;
+    ph.duration = duration;
+    ph.startDate = startDate;
+    ph.endDate = endDate;
+    ph.bytes = bytes;
+    
+    return ph;
 }
 
 - (BOOL)submitOrder:(TDAOrder *)order
@@ -172,9 +316,13 @@
     NSURL *url = [NSURL URLWithString:urlString];
     NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:url];
     
-    NSXMLDocument *responseXML = [self _submitRequest:req];
-    if ( ! responseXML ) {
-        NSLog(@"nil response from cancel");
+    NSXMLDocument *responseXML = nil;
+    BOOL okay = [self _submitRequest:req :&responseXML :YES];
+    if ( ! okay ) {
+        NSLog(@"request failed");
+        return NO;
+    } else if ( ! responseXML ) {
+        NSLog(@"response xml nil");
         return NO;
     }
     
@@ -206,9 +354,13 @@
     NSURL *url = [NSURL URLWithString:urlString];
     NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:url];
     
-    NSXMLDocument *responseXML = [self _submitRequest:req];
-    if ( ! responseXML ) {
-        NSLog(@"nil response from cancel");
+    NSXMLDocument *responseXML = nil;
+    BOOL okay = [self _submitRequest:req :&responseXML :YES];
+    if ( ! okay ) {
+        NSLog(@"request failed");
+        return NO;
+    } else if ( ! responseXML ) {
+        NSLog(@"response xml nil");
         return NO;
     }
     
@@ -228,15 +380,16 @@
     return YES;
 }
 
-- (NSXMLDocument *)_submitRequest:(NSURLRequest *)req
+- (BOOL)_submitRequest:(NSURLRequest *)req :(id *)obj :(BOOL)xml
 {
     __block BOOL okay = NO;
-    __block NSString *responseString;
+    //__block NSString *responseString;
+    __block NSData *responseData = nil;
     __block NSURLResponse *response;
     dispatch_semaphore_t sem = dispatch_semaphore_create(0);
     __unused NSURLSessionDataTask *sesTask = [[NSURLSession sharedSession] dataTaskWithRequest:req completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response_, NSError * _Nullable error) {
         response = response_;
-        responseString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        responseData = data;
         NSLog(@"response[%ld]: %@",[data length],error);
         okay = ([(NSHTTPURLResponse *)response statusCode] == 200); // and response data includes "OK"
         dispatch_semaphore_signal(sem);
@@ -245,10 +398,19 @@
     
     dispatch_semaphore_wait(sem,DISPATCH_TIME_FOREVER);
     
+    if ( ! xml )
+        *obj = responseData;
+    
     if ( ! okay ) {
         NSLog(@"request failed: %@",response);
         return NO;
     }
+    
+    if ( ! xml )
+        return YES;
+    
+    NSString *responseString = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
+    
     if ( ! responseString ) {
         NSLog(@"request got nil response string: %@",response);
         return NO;
@@ -266,7 +428,9 @@
         return NO;
     }
     
-    return responseXML;
+    *obj = responseXML;
+    
+    return YES;
 }
 
 @end

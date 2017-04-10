@@ -11,6 +11,8 @@
 		63AF127F1E99C93800995E5A /* TDAOrder.m in Sources */ = {isa = PBXBuildFile; fileRef = 63AF127D1E99C93800995E5A /* TDAOrder.m */; };
 		63AF12821E9AD26D00995E5A /* TDAQuote.h in Headers */ = {isa = PBXBuildFile; fileRef = 63AF12801E9AD26D00995E5A /* TDAQuote.h */; };
 		63AF12831E9AD26D00995E5A /* TDAQuote.m in Sources */ = {isa = PBXBuildFile; fileRef = 63AF12811E9AD26D00995E5A /* TDAQuote.m */; };
+		63AF12861E9AEBFA00995E5A /* TDAPriceHistory.h in Headers */ = {isa = PBXBuildFile; fileRef = 63AF12841E9AEBFA00995E5A /* TDAPriceHistory.h */; };
+		63AF12871E9AEBFA00995E5A /* TDAPriceHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = 63AF12851E9AEBFA00995E5A /* TDAPriceHistory.m */; };
 		63C8F6361E92D930000EA4F8 /* obj-tda.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63C8F62C1E92D92F000EA4F8 /* obj-tda.framework */; };
 		63C8F63B1E92D930000EA4F8 /* obj_tdaTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C8F63A1E92D930000EA4F8 /* obj_tdaTests.m */; };
 		63C8F63D1E92D930000EA4F8 /* obj-tda.h in Headers */ = {isa = PBXBuildFile; fileRef = 63C8F62F1E92D92F000EA4F8 /* obj-tda.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -33,6 +35,8 @@
 		63AF127D1E99C93800995E5A /* TDAOrder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TDAOrder.m; sourceTree = "<group>"; };
 		63AF12801E9AD26D00995E5A /* TDAQuote.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TDAQuote.h; sourceTree = "<group>"; };
 		63AF12811E9AD26D00995E5A /* TDAQuote.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TDAQuote.m; sourceTree = "<group>"; };
+		63AF12841E9AEBFA00995E5A /* TDAPriceHistory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TDAPriceHistory.h; sourceTree = "<group>"; };
+		63AF12851E9AEBFA00995E5A /* TDAPriceHistory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TDAPriceHistory.m; sourceTree = "<group>"; };
 		63C8F62C1E92D92F000EA4F8 /* obj-tda.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = "obj-tda.framework"; sourceTree = BUILT_PRODUCTS_DIR; };
 		63C8F62F1E92D92F000EA4F8 /* obj-tda.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "obj-tda.h"; sourceTree = "<group>"; };
 		63C8F6301E92D92F000EA4F8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -91,6 +95,8 @@
 				63C8F6471E92D9E1000EA4F8 /* TDASession.m */,
 				63AF12801E9AD26D00995E5A /* TDAQuote.h */,
 				63AF12811E9AD26D00995E5A /* TDAQuote.m */,
+				63AF12841E9AEBFA00995E5A /* TDAPriceHistory.h */,
+				63AF12851E9AEBFA00995E5A /* TDAPriceHistory.m */,
 			);
 			path = "obj-tda";
 			sourceTree = "<group>";
@@ -113,6 +119,7 @@
 			files = (
 				63C8F63D1E92D930000EA4F8 /* obj-tda.h in Headers */,
 				63C8F6481E92D9E1000EA4F8 /* TDASession.h in Headers */,
+				63AF12861E9AEBFA00995E5A /* TDAPriceHistory.h in Headers */,
 				63AF127E1E99C93800995E5A /* TDAOrder.h in Headers */,
 				63AF12821E9AD26D00995E5A /* TDAQuote.h in Headers */,
 			);
@@ -218,6 +225,7 @@
 			files = (
 				63AF127F1E99C93800995E5A /* TDAOrder.m in Sources */,
 				63C8F6491E92D9E1000EA4F8 /* TDASession.m in Sources */,
+				63AF12871E9AEBFA00995E5A /* TDAPriceHistory.m in Sources */,
 				63AF12831E9AD26D00995E5A /* TDAQuote.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

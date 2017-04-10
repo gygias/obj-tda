@@ -34,15 +34,27 @@
     TDASession *ses = [TDASession new];
     BOOL okay = [ses loginWithUser:<#user#> pass:<#pass#> source:<#source#> version:<#version#>];
     XCTAssert(okay,@"login failed");
+    
     okay = [ses getBalancesAndPositions];
     XCTAssert(okay,@"get b&p failed");
+    
+    TDAPriceHistory *ph = [ses getPriceHistory:@"aapl" :MinuteInterval :5 :DayPeriod :10 :nil :nil :NO];
+    XCTAssert(ph,@"price history failed");
+    NSArray *prices = ph.prices;
+    XCTAssert(prices,@"price history parse failed");
+    for ( TDAPrice *price in prices ) {
+        printf("%0.2f.. ",price.close);
+        
+    }
+    NSLog(@"...");
+    
     TDAQuote *quote = [ses getQuote:@"jnug"];
     XCTAssert(quote,@"get quote failed");
     XCTAssert([quote.symbol isEqualToString:@"JNUG"],@"get quote failed");
     XCTAssert(quote.last > 0,@"get quote failed");
     XCTAssert(quote.last < 100,@"get quote failed");
     
-#define TEST_ORDER
+//#define TEST_ORDER
 #ifdef TEST_ORDER
     TDAOrder *order = [TDAOrder new];
     order.symbol = @"aapl";
