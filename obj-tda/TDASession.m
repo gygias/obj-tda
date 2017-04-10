@@ -15,6 +15,7 @@
 #define ETURL "https://apis.tdameritrade.com/apps/100/EquityTrade?source=%@&orderstring=%@"
 #define CURL "https://apis.tdameritrade.com/apps/100/OrderCancel?source=%@&orderid=%@" // account id optional
 #define PHURL "https://apis.tdameritrade.com/apps/100/PriceHistory?source=%@&requestidentifiertype=SYMBOL"
+#define KAURL "https://apis.tdameritrade.com/apps/KeepAlive?source=%@"
 
 @implementation TDASession
 
@@ -70,6 +71,31 @@
     _accountIDs = accountIDs;
     _source = source;
     NSLog(@"logged in as '%@'",source);
+    
+    return YES;
+}
+
+- (BOOL)keepAlive
+{
+    NSString *urlString = [NSString stringWithFormat:@KAURL,_source];
+    NSURL *url = [NSURL URLWithString:urlString];
+    NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:url];
+    
+    NSData *data = nil;
+    BOOL okay = [self _submitRequest:req :&data :NO];
+    if ( ! okay ) {
+        NSLog(@"keep alive failed");
+        return NO;
+    } else if ( ! data ) {
+        NSLog(@"keep alive nil data");
+        return NO;
+    }
+    
+    NSString *string = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    if ( ! [string isEqualToString:@"LoggedOn"] ) {
+        NSLog(@"keep alive failed: '%@'",string);
+        return NO;
+    }
     
     return YES;
 }

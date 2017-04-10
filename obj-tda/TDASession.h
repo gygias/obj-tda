@@ -19,6 +19,7 @@
 }
 
 - (BOOL)loginWithUser:(NSString *)user pass:(NSString *)pass source:(NSString *)source version:(NSString *)version;
+- (BOOL)keepAlive;
 - (BOOL)logoff;
 
 // account

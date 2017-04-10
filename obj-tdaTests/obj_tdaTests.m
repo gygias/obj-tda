@@ -38,13 +38,17 @@
     okay = [ses getBalancesAndPositions];
     XCTAssert(okay,@"get b&p failed");
     
+    okay = [ses keepAlive];
+    XCTAssert(okay,@"keep alive failed");
+    
     TDAPriceHistory *ph = [ses getPriceHistory:@"aapl" :MinuteInterval :5 :DayPeriod :10 :nil :nil :NO];
     XCTAssert(ph,@"price history failed");
     NSArray *prices = ph.prices;
     XCTAssert(prices,@"price history parse failed");
+    XCTAssert([prices count] == 780,@"got %ld prices",[prices count]);
     for ( TDAPrice *price in prices ) {
         printf("%0.2f.. ",price.close);
-        
+        XCTAssert(price.close>100 && price.close<200,@"bogus price %0.2f",price.close);
     }
     NSLog(@"...");
     
