@@ -342,7 +342,7 @@
     NSError *error = nil;
     NSArray *nodes = [responseXML nodesForXPath:@"//order-wrapper/order/order-id" error:&error];
     if ( [nodes count] != 1 ) {
-        NSLog(@"error: got %lu order ids",[nodes count]);
+        NSLog(@"error: got %lu order ids:\n%@",[nodes count],responseXML);
         return NO;
     }
     
@@ -350,7 +350,7 @@
     
     nodes = [responseXML nodesForXPath:@"//order-wrapper/orderstring" error:&error];
     if ( [nodes count] != 1 ) {
-        NSLog(@"error: got %lu orderstrings",[nodes count]);
+        NSLog(@"error: got %lu orderstrings:\n%@",[nodes count],responseXML);
         return NO;
     }
     
@@ -494,12 +494,14 @@
     NSError *error = nil;
     NSArray *results = [xml nodesForXPath:@"//result" error:&error];
     if ( [results count] != 1 ) {
-        NSLog(@"error: got %lu results",[results count]);
+        NSLog(@"error: got %lu results:\n%@",[results count],xml);
         return NO;
     }
     
-    if ( ! [[[results lastObject] stringValue] isEqualToString:okString] )
+    if ( ! [[[results lastObject] stringValue] isEqualToString:okString] ) {
+        NSLog(@"error: request result not 'ok':\n%@",xml);
         return NO;
+    }
     
     return YES;
 }
