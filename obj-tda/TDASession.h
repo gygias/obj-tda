@@ -11,6 +11,8 @@
 #import "TDAOrder.h"
 #import "TDAQuote.h"
 #import "TDAPriceHistory.h"
+#import "TDABalances.h"
+#import "TDAPosition.h"
 
 @interface TDASession : NSObject
 {
@@ -23,7 +25,7 @@
 - (BOOL)logoff;
 
 // account
-- (BOOL)getBalancesAndPositions;
+- (BOOL)getBalancesAndPositions:(TDABalances **)outBalances :(NSArray **)outPositions;
 
 // info
 - (TDAQuote *)getQuote:(NSString *)symbol;

@@ -122,9 +122,10 @@
     return YES;
 }
 
-- (BOOL)getBalancesAndPositions
+- (BOOL)getBalancesAndPositions:(TDABalances **)outBalances :(NSArray **)outPositions
 {
     NSString *urlString = [NSString stringWithFormat:@BandPURL,_source];
+    urlString = [urlString stringByAppendingString:@"&suppressquotes=true"];
     NSURL *url = [NSURL URLWithString:urlString];
     NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:url];
     
@@ -150,6 +151,42 @@
         return NO;
     }
     
+    NSError *error = nil;
+    NSArray *balancessXML = [responseXML nodesForXPath:@"//balance" error:&error];
+    if ( ! balancessXML || [balancessXML count] != 1 ) {
+        NSLog(@"failed to parse accounts[%ld]: %@",[balancessXML count],error);
+        return NO;
+    }
+    
+    NSXMLNode *balancesXML = [balancessXML lastObject];
+    TDABalances *balances = [TDABalances balancesWithXMLNode:balancesXML];
+    if ( ! balances ) {
+        NSLog(@"failed to initialize balances from xml: %@",balancesXML);
+        return NO;
+    }
+    
+    NSMutableArray *positions = [NSMutableArray new];
+    {
+        NSError *error = nil;
+        NSXMLNode *positionsXML = [[responseXML nodesForXPath:@"//positions" error:&error] firstObject];
+        for ( NSXMLNode *aPositionTypeXML in positionsXML.children ) {
+            if ( [@[ @"account-id", @"error" ] containsObject:aPositionTypeXML.name] )
+                continue;
+            
+            for ( NSXMLNode *aPositionXML in aPositionTypeXML.children ) {
+                //NSLog(@"%@: %@",aPositionTypeXML.name,aPositionXML);
+                TDAPosition *aPosition = [TDAPosition positionWithXMLNode:aPositionXML];
+                if ( ! aPosition ) {
+                    NSLog(@"failed to initialize position from xml: %@",aPositionXML);
+                    return NO;
+                } else
+                    [positions addObject:aPosition];
+            }
+        }
+    }
+    
+    *outPositions = positions;
+    *outBalances = balances;
     NSLog(@"get b&p successful");
     return YES;
 }

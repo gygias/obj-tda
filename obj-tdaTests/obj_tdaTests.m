@@ -35,8 +35,12 @@
     BOOL okay = [ses loginWithUser:<#user#> pass:<#pass#> source:<#source#> version:<#version#>];
     XCTAssert(okay,@"login failed");
     
-    okay = [ses getBalancesAndPositions];
+    TDABalances *balances = nil;
+    NSArray *positions = nil;
+    okay = [ses getBalancesAndPositions:&balances :&positions];
     XCTAssert(okay,@"get b&p failed");
+    NSLog(@"balances: %@",balances);
+    NSLog(@"positions:\n%@",positions);
     
     okay = [ses keepAlive];
     XCTAssert(okay,@"keep alive failed");
@@ -47,10 +51,10 @@
     XCTAssert(prices,@"price history parse failed");
     XCTAssert([prices count] == 780,@"got %ld prices",[prices count]);
     for ( TDAPrice *price in prices ) {
-        printf("%0.2f.. ",price.close);
+        //printf("%0.2f.. ",price.close);
         XCTAssert(price.close>100 && price.close<200,@"bogus price %0.2f",price.close);
     }
-    NSLog(@"...");
+    //NSLog(@"...");
     
     TDAQuote *quote = [ses getQuote:@"jnug"];
     XCTAssert(quote,@"get quote failed");

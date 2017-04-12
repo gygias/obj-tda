@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6339AF9A1E9D82A7007190E3 /* TDAPosition.h in Headers */ = {isa = PBXBuildFile; fileRef = 6339AF981E9D82A7007190E3 /* TDAPosition.h */; };
+		6339AF9B1E9D82A7007190E3 /* TDAPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = 6339AF991E9D82A7007190E3 /* TDAPosition.m */; };
+		6339AF9E1E9D83EB007190E3 /* TDABalances.h in Headers */ = {isa = PBXBuildFile; fileRef = 6339AF9C1E9D83EB007190E3 /* TDABalances.h */; };
+		6339AF9F1E9D83EB007190E3 /* TDABalances.m in Sources */ = {isa = PBXBuildFile; fileRef = 6339AF9D1E9D83EB007190E3 /* TDABalances.m */; };
 		63AF127E1E99C93800995E5A /* TDAOrder.h in Headers */ = {isa = PBXBuildFile; fileRef = 63AF127C1E99C93800995E5A /* TDAOrder.h */; };
 		63AF127F1E99C93800995E5A /* TDAOrder.m in Sources */ = {isa = PBXBuildFile; fileRef = 63AF127D1E99C93800995E5A /* TDAOrder.m */; };
 		63AF12821E9AD26D00995E5A /* TDAQuote.h in Headers */ = {isa = PBXBuildFile; fileRef = 63AF12801E9AD26D00995E5A /* TDAQuote.h */; };
@@ -31,6 +35,10 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		6339AF981E9D82A7007190E3 /* TDAPosition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TDAPosition.h; sourceTree = "<group>"; };
+		6339AF991E9D82A7007190E3 /* TDAPosition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TDAPosition.m; sourceTree = "<group>"; };
+		6339AF9C1E9D83EB007190E3 /* TDABalances.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TDABalances.h; sourceTree = "<group>"; };
+		6339AF9D1E9D83EB007190E3 /* TDABalances.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TDABalances.m; sourceTree = "<group>"; };
 		63AF127C1E99C93800995E5A /* TDAOrder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TDAOrder.h; sourceTree = "<group>"; };
 		63AF127D1E99C93800995E5A /* TDAOrder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TDAOrder.m; sourceTree = "<group>"; };
 		63AF12801E9AD26D00995E5A /* TDAQuote.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TDAQuote.h; sourceTree = "<group>"; };
@@ -97,6 +105,10 @@
 				63AF12811E9AD26D00995E5A /* TDAQuote.m */,
 				63AF12841E9AEBFA00995E5A /* TDAPriceHistory.h */,
 				63AF12851E9AEBFA00995E5A /* TDAPriceHistory.m */,
+				6339AF981E9D82A7007190E3 /* TDAPosition.h */,
+				6339AF991E9D82A7007190E3 /* TDAPosition.m */,
+				6339AF9C1E9D83EB007190E3 /* TDABalances.h */,
+				6339AF9D1E9D83EB007190E3 /* TDABalances.m */,
 			);
 			path = "obj-tda";
 			sourceTree = "<group>";
@@ -118,8 +130,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				63C8F63D1E92D930000EA4F8 /* obj-tda.h in Headers */,
+				6339AF9E1E9D83EB007190E3 /* TDABalances.h in Headers */,
 				63C8F6481E92D9E1000EA4F8 /* TDASession.h in Headers */,
 				63AF12861E9AEBFA00995E5A /* TDAPriceHistory.h in Headers */,
+				6339AF9A1E9D82A7007190E3 /* TDAPosition.h in Headers */,
 				63AF127E1E99C93800995E5A /* TDAOrder.h in Headers */,
 				63AF12821E9AD26D00995E5A /* TDAQuote.h in Headers */,
 			);
@@ -223,7 +237,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6339AF9F1E9D83EB007190E3 /* TDABalances.m in Sources */,
 				63AF127F1E99C93800995E5A /* TDAOrder.m in Sources */,
+				6339AF9B1E9D82A7007190E3 /* TDAPosition.m in Sources */,
 				63C8F6491E92D9E1000EA4F8 /* TDASession.m in Sources */,
 				63AF12871E9AEBFA00995E5A /* TDAPriceHistory.m in Sources */,
 				63AF12831E9AD26D00995E5A /* TDAQuote.m in Sources */,
