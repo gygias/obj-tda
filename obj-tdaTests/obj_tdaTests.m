@@ -70,9 +70,10 @@
     XCTAssert(quote.last > 0,@"get quote failed");
     XCTAssert(quote.last < 100,@"get quote failed");
     
-#define TEST_ORDER
-#ifdef TEST_ORDER
-    TDAOrder *order = [TDAOrder new];
+    TDAOrder *order = nil;
+#define TEST_BUY_ORDER
+#ifdef TEST_BUY_ORDER
+    order = [TDAOrder new];
     order.symbol = @"aapl";
     order.action = Buy;
     order.type = LimitOrder;
@@ -94,6 +95,33 @@
         
         okay = [ses cancelOrder:order];
         XCTAssert(okay,@"cancel order failed");
+    }
+#endif
+    
+//#define TEST_SHORT_ORDER
+#ifdef TEST_SHORT_ORDER
+    order = [TDAOrder new];
+    order.symbol = @"wti";
+    order.action = SellShort;
+    order.type = LimitOrder;
+    order.quantity = 1000;
+    order.price = 100;
+    order.tif = GTCExtTIF;
+    
+    okay = [ses submitOrder:order];
+    XCTAssert(okay,@"short submit order failed");
+    
+    if ( okay ) {
+        [[NSRunLoop currentRunLoop] runUntilDate:[NSDate dateWithTimeIntervalSinceNow:2]];
+        
+        okay = [ses getOrderStatus:order];
+        XCTAssert(okay,@"short order status failed");
+        XCTAssert(order.status == Open,@"short order is not open");
+        XCTAssert(order.editable,@"short order is not editable");
+        XCTAssert(order.cancelable,@"short order is not cancelable");
+        
+        okay = [ses cancelOrder:order];
+        XCTAssert(okay,@"cancel short order failed");
     }
 #endif
     
