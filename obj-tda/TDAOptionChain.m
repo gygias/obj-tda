@@ -206,7 +206,7 @@
     for (NSString *key in keys) {
         TDAOptionPart *call = self.callsByStrike[key];
         TDAOptionPart *put = self.putsByStrike[key];
-        [desc appendFormat:@"\t%@: call $%0.2f oI %d iV %0.2f x%d, put $%0.2f oI %d iV %0.2f x%d\n",key,call.quote.last,call.openInterest,call.impliedVolatility,call.multiplier,put.quote.last,put.openInterest,put.impliedVolatility,put.multiplier];
+        [desc appendFormat:@"\tcall $%0.2f oI %d iV %0.2f x%d === %@ === put $%0.2f oI %d iV %0.2f x%d\n",call.quote.last,call.openInterest,call.impliedVolatility,call.multiplier,key,put.quote.last,put.openInterest,put.impliedVolatility,put.multiplier];
     }
     return desc;
 }
