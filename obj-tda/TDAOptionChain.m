@@ -44,29 +44,29 @@
         return nil;
     }
     
-    NSMutableArray *options = [NSMutableArray new];
+    NSMutableArray *optionDates = [NSMutableArray new];
     for ( NSXMLNode *anOptionDate in xmls ) {
-        TDAOption *option = [TDAOption optionWithXMLNode:anOptionDate symbol:chain.symbol];
-        if ( ! option ) {
+        TDAOptionDate *optionDate = [TDAOptionDate optionDateWithXMLNode:anOptionDate symbol:chain.symbol];
+        if ( ! optionDate ) {
             NSLog(@"error parsing option: %@",anOptionDate);
             return nil;
         }
-        [options addObject:option];
+        [optionDates addObject:optionDate];
     }
     
-    chain.options = options;
+    chain.optionDates = optionDates;
     
     return chain;
 }
 
 @end
 
-@implementation TDAOption
+@implementation TDAOptionDate
 
-+ (TDAOption *)optionWithXMLNode:(NSXMLNode *)node symbol:(NSString *)symbol
++ (TDAOptionDate *)optionDateWithXMLNode:(NSXMLNode *)node symbol:(NSString *)symbol
 {
-    TDAOption *option = [TDAOption new];
-    option.symbol = symbol;
+    TDAOptionDate *optionDate = [TDAOptionDate new];
+    optionDate.symbol = symbol;
     
     NSError *error = nil;
     NSArray *dates = [node nodesForXPath:@"date" error:&error];
@@ -75,8 +75,8 @@
         return nil;
     }
     NSDateFormatter *dF = [NSDateFormatter new];
-    dF.dateFormat = @"YYYYMMDD";
-    option.date = [dF dateFromString:[[dates firstObject] stringValue]];
+    dF.dateFormat = @"yyyyMMdd";
+    optionDate.date = [dF dateFromString:[[dates firstObject] stringValue]];
     
     NSArray *expires = [node nodesForXPath:@"expiration-type" error:&error];
     if ( ! expires || [expires count] != 1 ) {
@@ -85,64 +85,130 @@
     }
     NSString *expiresString = [[expires firstObject] stringValue];
     if ( [expiresString isEqualToString:@"S"] )
-        option.expirationType = ShortDate;
+        optionDate.expirationType = ShortDate;
     else if ( [expiresString isEqualToString:@"W"] )
-        option.expirationType = Weekly;
+        optionDate.expirationType = Weekly;
     else if ( [expiresString isEqualToString:@"M"] )
-        option.expirationType = Monthly;
+        optionDate.expirationType = Monthly;
     else if ( [expiresString isEqualToString:@"Q"] ) // undocumented
-        option.expirationType = Quarterly;
+        optionDate.expirationType = Quarterly;
     else if ( [expiresString isEqualToString:@"R"] )
-        option.expirationType = Regular;
+        optionDate.expirationType = Regular;
     else if ( [expiresString isEqualToString:@"L"] )
-        option.expirationType = Leap;
+        optionDate.expirationType = Leap;
     else {
         NSLog(@"unknown expiration type: %@\n%@",expiresString,node);
         return nil;
     }
     
-    NSArray *daysToExpirations = [node nodesForXPath:@"days-to-expiration" error:&error];
-    if ( ! daysToExpirations || [daysToExpirations count] != 1 ) {
-        NSLog(@"error: got %ld elements for days-to-expiration",[daysToExpirations count]);
+    NSArray *xmls = [node nodesForXPath:@"days-to-expiration" error:&error];
+    if ( ! xmls || [xmls count] != 1 ) {
+        NSLog(@"error: got %ld elements for days-to-expiration",[xmls count]);
         return nil;
     }
-    option.daysToExpiration = [[[daysToExpirations firstObject] stringValue] intValue];
+    optionDate.daysToExpiration = [[[xmls firstObject] stringValue] intValue];
     
-    NSArray *optionStrikesXML = [node nodesForXPath:@"option-strike" error:&error];
-    if ( ! optionStrikesXML || [optionStrikesXML count] == 0 ) {
-        NSLog(@"error: got %ld elements for option-strike",[optionStrikesXML count]);
+    xmls = [node nodesForXPath:@"option-strike" error:&error];
+    if ( ! xmls || [xmls count] == 0 ) {
+        NSLog(@"error: got %ld elements for option-strike",[xmls count]);
         return nil;
     }
     
-    for ( NSXMLNode *optionStrikeXML in optionStrikesXML ) {
+    NSMutableDictionary *putsByStrike = [NSMutableDictionary new];
+    NSMutableDictionary *callsByStrike = [NSMutableDictionary new];
+    for ( NSXMLNode *optionStrikeXML in xmls ) {
         
-        NSArray *strikePrices = [optionStrikeXML nodesForXPath:@"strike-price" error:&error];
-        if ( ! strikePrices || [strikePrices count] != 1 ) {
-            NSLog(@"error: got %ld elements for strike-price",[strikePrices count]);
+        xmls = [optionStrikeXML nodesForXPath:@"strike-price" error:&error];
+        if ( ! xmls || [xmls count] != 1 ) {
+            NSLog(@"error: got %ld elements for strike-price",[xmls count]);
             return nil;
         }
-        option.strike = [[[daysToExpirations firstObject] stringValue] floatValue];
+        optionDate.strike = [[[xmls firstObject] stringValue] floatValue];
         
-        NSArray *standardOptions = [optionStrikeXML nodesForXPath:@"standard-option" error:&error];
-        if ( ! standardOptions || [standardOptions count] != 1 ) {
-            NSLog(@"error: got %ld elements for standard-option",[standardOptions count]);
+        xmls = [optionStrikeXML nodesForXPath:@"standard-option" error:&error];
+        if ( ! xmls || [xmls count] != 1 ) {
+            NSLog(@"error: got %ld elements for standard-option",[xmls count]);
             return nil;
         }
-        option.isStandard = [[[standardOptions firstObject] stringValue] boolValue];
+        optionDate.isStandard = [[[xmls firstObject] stringValue] boolValue];
         
-        option.put = [TDAOptionPart optionPartWithXML:optionStrikeXML withType:@"put"];
-        option.call = [TDAOptionPart optionPartWithXML:optionStrikeXML withType:@"call"];
+        TDAOptionPart *put = [TDAOptionPart optionPartWithXML:optionStrikeXML withType:@"put"];
+        if ( put ) {
+            if ( [putsByStrike objectForKey:@(optionDate.strike)] ) {
+                NSLog(@"error: already have a put for strike %0.2f: %@",optionDate.strike,optionStrikeXML);
+                return nil;
+            }
+            [putsByStrike setObject:put forKey:@(optionDate.strike)];
+        } else {
+            NSLog(@"failed to parse put element: %@",optionStrikeXML);
+            return nil;
+        }
+        
+        TDAOptionPart *call = [TDAOptionPart optionPartWithXML:optionStrikeXML withType:@"call"];
+        if ( call ) {
+            if ( [callsByStrike objectForKey:@(optionDate.strike)] ) {
+                NSLog(@"error: already have call for strike %0.2f: %@",optionDate.strike,optionStrikeXML);
+                return nil;
+            }
+            [callsByStrike setObject:call forKey:@(optionDate.strike)];
+        } else {
+            NSLog(@"failed to parse call element: %@",optionStrikeXML);
+            return nil;
+        }
     }
     
-    return option;
+    optionDate.putsByStrike = putsByStrike;
+    optionDate.callsByStrike = callsByStrike;
+    
+    return optionDate;
 }
 
 - (NSString *)description
 {
     NSDateFormatter *dF = [NSDateFormatter new];
-    dF.dateFormat = @"YYYY-mm-dd";
+    dF.dateFormat = @"YYYY-MM-dd";
     NSString *ymdDateString = [dF stringFromDate:self.date];
-    return [NSString stringWithFormat:@"%@ @ %0.2f x%d exp %@: call $%0.2f oI %d iV %0.2f, put $%0.2f oI %d iV %0.2f",self.symbol,self.strike,self.put.multiplier,ymdDateString,self.call.quote.last,self.call.openInterest,self.call.impliedVolatility,self.put.quote.last,self.put.openInterest,self.put.impliedVolatility];
+    
+    NSArray *keys = self.callsByStrike.allKeys;
+    keys = [keys sortedArrayUsingComparator:^NSComparisonResult(id  _Nonnull obj1, id  _Nonnull obj2) {
+        float a = [obj1 floatValue];
+        float b = [obj2 floatValue];
+        if ( a < b ) return NSOrderedAscending;
+        else if ( a == b ) return NSOrderedSame;
+        return NSOrderedDescending;
+    }];
+    
+    NSString *expiryString = @"?";
+    switch(self.expirationType) {
+        case ShortDate:
+            expiryString = @"ShortDate";
+            break;
+        case Weekly:
+            expiryString = @"Weekly";
+            break;
+        case Monthly:
+            expiryString = @"Monthly";
+            break;
+        case Quarterly:
+            expiryString = @"Quarterly";
+            break;
+        case Regular:
+            expiryString = @"Regular";
+            break;
+        case Leap:
+            expiryString = @"Leap";
+            break;
+        default:
+            break;
+            
+    }
+    NSMutableString *desc = [NSMutableString stringWithFormat:@"%@ options for %@ expiring %@\n",expiryString,self.symbol,ymdDateString];
+    for (NSString *key in keys) {
+        TDAOptionPart *call = self.callsByStrike[key];
+        TDAOptionPart *put = self.putsByStrike[key];
+        [desc appendFormat:@"\t%@: call $%0.2f oI %d iV %0.2f x%d, put $%0.2f oI %d iV %0.2f x%d\n",key,call.quote.last,call.openInterest,call.impliedVolatility,call.multiplier,put.quote.last,put.openInterest,put.impliedVolatility,put.multiplier];
+    }
+    return desc;
 }
 
 @end

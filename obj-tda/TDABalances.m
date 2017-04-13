@@ -106,7 +106,7 @@
 
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"account: $%0.2f, cash: %0.2f, day: $%0.2f, available: $%0.2f",self.accountCurrent,self.cashCurrent,self.dayBuyingPower,self.availableFundsForTrading];
+    return [NSString stringWithFormat:@"account: $%0.2f, cash: $%0.2f, day: $%0.2f, available: $%0.2f",self.accountCurrent,self.cashCurrent,self.dayBuyingPower,self.availableFundsForTrading];
 }
 
 @end

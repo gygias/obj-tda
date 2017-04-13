@@ -48,8 +48,8 @@
     NSString *symbol = @"chk";
     TDAOptionChain *chain = [ses getOptionChainForSymbol:symbol];
     XCTAssert(chain,@"failed to get option chain for %@",symbol);
-    for ( TDAOption *option in chain.options ) {
-        NSLog(@"%@",option);
+    for ( TDAOptionDate *optionDate in chain.optionDates ) {
+        NSLog(@"%@",optionDate);
     }
     
     symbol = @"aapl";

@@ -19,7 +19,7 @@ typedef enum {
 
 @property NSString *symbol;
 @property TDAQuote *quote;
-@property NSArray *options;
+@property NSArray *optionDates;
 @property QuotePunctuality punctuality;
 
 + (TDAOptionChain *)optionChainWithXMLNode:(NSXMLNode *)node;
@@ -60,9 +60,9 @@ typedef enum {
     Leap
 } OptionExpirationType;
 
-@interface TDAOption : NSObject
+@interface TDAOptionDate : NSObject
 
-+ (TDAOption *)optionWithXMLNode:(NSXMLNode *)node symbol:(NSString *)symbol;
++ (TDAOptionDate *)optionDateWithXMLNode:(NSXMLNode *)node symbol:(NSString *)symbol;
 
 @property NSString *symbol;
 @property NSString *desc;
@@ -70,8 +70,8 @@ typedef enum {
 @property OptionExpirationType expirationType;
 @property int daysToExpiration;
 
-@property TDAOptionPart *put;
-@property TDAOptionPart *call;
+@property NSDictionary *putsByStrike; // TDAOptionPart
+@property NSDictionary *callsByStrike; // TDAOptionPart
 
 @property float strike;
 @property BOOL isStandard;
