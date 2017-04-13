@@ -17,6 +17,7 @@
 #define PHURL "https://apis.tdameritrade.com/apps/100/PriceHistory?source=%@&requestidentifiertype=SYMBOL"
 #define KAURL "https://apis.tdameritrade.com/apps/KeepAlive?source=%@"
 #define OSURL "https://apis.tdameritrade.com/apps/100/OrderStatus?source=%@"
+#define OCURL "https://apis.tdameritrade.com/apps/200/OptionChain?source=%@&symbol=%@&quotes=true"
 
 @implementation TDASession
 
@@ -226,7 +227,7 @@
         return nil;
     }
     
-    TDAQuote *quote = [TDAQuote quoteWithXMLNode:[quotes lastObject]];
+    TDAQuote *quote = [TDAQuote quoteWithXMLNode:[quotes lastObject] forOptionChain:NO forOptionPartWithSymbol:nil];
     return quote;
 }
 
@@ -349,6 +350,42 @@
     ph.bytes = bytes;
     
     return ph;
+}
+
+- (TDAOptionChain *)getOptionChainForSymbol:(NSString *)symbol
+{
+    NSString *urlString = [NSString stringWithFormat:@OCURL,_source,[symbol uppercaseString]];
+    NSURL *url = [NSURL URLWithString:urlString];
+    NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:url];
+    
+    NSXMLDocument *responseXML = nil;
+    BOOL okay = [self _submitRequest:req :&responseXML :YES];
+    if ( ! okay ) {
+        NSLog(@"request failed");
+        return NO;
+    } else if ( ! responseXML ) {
+        NSLog(@"response xml nil");
+        return NO;
+    }
+    
+    okay = [self _checkResult:responseXML :@"OK"];
+    if ( ! okay ) {
+        NSLog(@"%s: result not OK",__PRETTY_FUNCTION__);
+        return NO;
+    }
+    
+    NSError *error = nil;
+    NSArray *chainXML = [responseXML nodesForXPath:@"//option-chain-results" error:&error];
+    if ( ! chainXML || [chainXML count] != 1 ) {
+        NSLog(@"error: got %ld elements for option-chain-results",[chainXML count]);
+        return nil;
+    }
+    
+    TDAOptionChain *chain = [TDAOptionChain optionChainWithXMLNode:[chainXML firstObject]];
+    if ( ! chain )
+        NSLog(@"failed to initialize chain for %@ from xml: %@",symbol,chainXML);
+    
+    return chain;
 }
 
 - (BOOL)submitOrder:(TDAOrder *)order

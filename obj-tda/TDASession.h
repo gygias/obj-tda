@@ -13,6 +13,7 @@
 #import "TDAPriceHistory.h"
 #import "TDABalances.h"
 #import "TDAPosition.h"
+#import "TDAOptionChain.h"
 
 @interface TDASession : NSObject
 {
@@ -37,6 +38,7 @@
                                     :(NSDate *)startDate
                                     :(NSDate *)endDate
                                     :(BOOL)extended;
+- (TDAOptionChain *)getOptionChainForSymbol:(NSString *)symbol;
 
 // orders
 - (BOOL)submitOrder:(TDAOrder *)order;
