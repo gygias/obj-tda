@@ -38,7 +38,7 @@
     TDABalances *balances = nil;
     NSArray *positions = nil;
     okay = [ses getBalancesAndPositions:&balances :&positions];
-    XCTAssert(okay,@"get b&p failed");
+    XCTAssert(okay&&balances&&positions,@"get b&p failed");
     NSLog(@"balances: %@",balances);
     NSLog(@"positions:\n%@",positions);
     
@@ -60,7 +60,7 @@
     XCTAssert([prices count] == 780,@"got %ld prices",[prices count]);
     NSLog(@"%@ prices 5 min / 10 days:",symbol);
     for ( TDAPrice *price in prices ) {
-        //printf("%0.2f.. ",price.close);
+        printf("%0.2f. ",price.close);
         XCTAssert(price.close>100 && price.close<200,@"bogus price %0.2f",price.close);
     }
     
@@ -98,15 +98,15 @@
     }
 #endif
     
-//#define TEST_SHORT_ORDER
+#define TEST_SHORT_ORDER
 #ifdef TEST_SHORT_ORDER
     order = [TDAOrder new];
-    order.symbol = @"wti";
+    order.symbol = @"aapl";
     order.action = SellShort;
     order.type = LimitOrder;
-    order.quantity = 1000;
-    order.price = 100;
-    order.tif = GTCExtTIF;
+    order.quantity = 100;
+    order.price = 200;
+    order.tif = DayTIF;
     
     okay = [ses submitOrder:order];
     XCTAssert(okay,@"short submit order failed");

@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#import "TDAQuote.h"
+#import <obj-tda/TDAQuote.h>
 
 typedef enum {
     RealTime = 0,

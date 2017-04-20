@@ -8,12 +8,12 @@
 
 #import <Foundation/Foundation.h>
 
-#import "TDAOrder.h"
-#import "TDAQuote.h"
-#import "TDAPriceHistory.h"
-#import "TDABalances.h"
-#import "TDAPosition.h"
-#import "TDAOptionChain.h"
+#import <obj-tda/TDAOrder.h>
+#import <obj-tda/TDAQuote.h>
+#import <obj-tda/TDAPriceHistory.h>
+#import <obj-tda/TDABalances.h>
+#import <obj-tda/TDAPosition.h>
+#import <obj-tda/TDAOptionChain.h>
 
 @interface TDASession : NSObject
 {
@@ -30,6 +30,7 @@
 
 // info
 - (TDAQuote *)getQuote:(NSString *)symbol;
+- (NSMutableArray *)getQuotes:(NSArray *)symbols;
 - (TDAPriceHistory *)getPriceHistory:(NSString *)symbol
                                     :(IntervalType)interval
                                     :(int)duration

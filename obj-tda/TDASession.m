@@ -194,7 +194,14 @@
 
 - (TDAQuote *)getQuote:(NSString *)symbol
 {
-    NSString *urlString = [NSString stringWithFormat:@QuoteURL,_source,[symbol uppercaseString]];
+    return [[self getQuotes:@[symbol]] lastObject];
+}
+
+- (NSMutableArray *)getQuotes:(NSArray *)symbols
+{
+    NSString *symbolsString = [[symbols componentsJoinedByString:@","] uppercaseString];
+    
+    NSString *urlString = [NSString stringWithFormat:@QuoteURL,_source,symbolsString];
     NSURL *url = [NSURL URLWithString:urlString];
     NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:url];
     
@@ -215,20 +222,29 @@
     }
     
     NSError *error = nil;
-    NSArray *quotes = [responseXML nodesForXPath:@"//quote-list/quote" error:&error];
-    if ( [quotes count] != 1 ) {
-        NSLog(@"error: quotes %lu",[quotes count]);
+    NSArray *quotesXML = [responseXML nodesForXPath:@"//quote-list/quote" error:&error];
+    if ( [quotesXML count] != [symbols count] ) {
+        NSLog(@"error: quotes %ld vs %ld requested",[quotesXML count],[symbols count]);
         return nil;
     }
     
-    NSArray *errors = [[quotes lastObject] nodesForXPath:@"//error" error:&error];
+    NSArray *errors = [[quotesXML lastObject] nodesForXPath:@"//error" error:&error];
     if ( [[[errors lastObject] stringValue] length] ) {
         NSLog(@"error: quote error '%@",[[errors lastObject] stringValue]);
         return nil;
     }
     
-    TDAQuote *quote = [TDAQuote quoteWithXMLNode:[quotes lastObject] forOptionChain:NO forOptionPartWithSymbol:nil];
-    return quote;
+    NSMutableArray *quotes = [NSMutableArray new];
+    for ( NSXMLNode *node in quotesXML ) {
+        TDAQuote *quote = [TDAQuote quoteWithXMLNode:node forOptionChain:NO forOptionPartWithSymbol:nil];
+        if ( ! quote ) {
+            NSLog(@"failed to initialize TDAQuote from %@",node);
+            return nil;
+        }
+        [quotes addObject:quote];
+    }
+    
+    return quotes;
 }
 
 - (TDAPriceHistory *)getPriceHistory:(NSString *)symbol
