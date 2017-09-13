@@ -27,12 +27,44 @@
     [super tearDown];
 }
 
+//#define short_tvix
+#ifdef short_tvix
+- (void)testShortTVIX
+{
+    TDASession *ses = [TDASession new];
+    BOOL okay = [ses loginWithUser:<#user#> pass:<#password#> source:<#source#> version:@"1.0"];
+    XCTAssert(okay,@"login failed");
+    
+    do {
+        TDAQuote *quote = [ses getQuote:@"tvix"];
+        
+        if ( quote.last > 40 && quote.last < 50 ) {
+            TDAOrder *order = [TDAOrder new];
+            order.symbol = @"tvix";
+            order.action = SellShort;
+            order.type = LimitOrder;
+            order.quantity = 600;
+            order.price = quote.last;
+            order.tif = DayTIF;
+            okay = [ses submitOrder:order];
+        } else {
+            NSLog(@"quote.last? %0.2f",quote.last);
+            okay = NO;
+        }
+        
+        sleep(1);
+    } while ( ! okay );
+    
+    [ses logoff];
+}
+#endif
+
 - (void)testExample {
     // This is an example of a functional test case.
     // Use XCTAssert and related functions to verify your tests produce the correct results.
     
     TDASession *ses = [TDASession new];
-    BOOL okay = [ses loginWithUser:<#user#> pass:<#pass#> source:<#source#> version:<#version#>];
+    BOOL okay = [ses loginWithUser:<#user#> pass:<#password#> source:<#source#> version:@"1.0"];
     XCTAssert(okay,@"login failed");
     
     TDABalances *balances = nil;

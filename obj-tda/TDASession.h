@@ -14,6 +14,7 @@
 #import <obj-tda/TDABalances.h>
 #import <obj-tda/TDAPosition.h>
 #import <obj-tda/TDAOptionChain.h>
+#import <obj-tda/TDAVolatilityHistory.h>
 
 @interface TDASession : NSObject
 {
@@ -39,6 +40,17 @@
                                     :(NSDate *)startDate
                                     :(NSDate *)endDate
                                     :(BOOL)extended;
+- (TDAVolatilityHistory *)getVolatilityHistory:(NSString *)symbol
+                                              :(BOOL)implied // "historical" if NO
+                                              :(IntervalType)intervalType
+                                              :(PeriodType)periodType
+                                              :(int)period
+                                              :(NSDate *)startDate
+                                              :(NSDate *)endDate
+                                              :(int)daysToExpiration
+                                              :(SurfaceType)surfaceType
+                                              :(int)surfaceVal1
+                                              :(int)surfaceVal2;
 - (TDAOptionChain *)getOptionChainForSymbol:(NSString *)symbol;
 
 // orders

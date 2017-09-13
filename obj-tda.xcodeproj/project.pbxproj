@@ -7,22 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		6339AF9A1E9D82A7007190E3 /* TDAPosition.h in Headers */ = {isa = PBXBuildFile; fileRef = 6339AF981E9D82A7007190E3 /* TDAPosition.h */; };
+		631AE1031EC36D1C00E51B70 /* TDAVolatilityHistory.h in Headers */ = {isa = PBXBuildFile; fileRef = 631AE1011EC36D1C00E51B70 /* TDAVolatilityHistory.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		631AE1041EC36D1C00E51B70 /* TDAVolatilityHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = 631AE1021EC36D1C00E51B70 /* TDAVolatilityHistory.m */; };
+		6339AF9A1E9D82A7007190E3 /* TDAPosition.h in Headers */ = {isa = PBXBuildFile; fileRef = 6339AF981E9D82A7007190E3 /* TDAPosition.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6339AF9B1E9D82A7007190E3 /* TDAPosition.m in Sources */ = {isa = PBXBuildFile; fileRef = 6339AF991E9D82A7007190E3 /* TDAPosition.m */; };
-		6339AF9E1E9D83EB007190E3 /* TDABalances.h in Headers */ = {isa = PBXBuildFile; fileRef = 6339AF9C1E9D83EB007190E3 /* TDABalances.h */; };
+		6339AF9E1E9D83EB007190E3 /* TDABalances.h in Headers */ = {isa = PBXBuildFile; fileRef = 6339AF9C1E9D83EB007190E3 /* TDABalances.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6339AF9F1E9D83EB007190E3 /* TDABalances.m in Sources */ = {isa = PBXBuildFile; fileRef = 6339AF9D1E9D83EB007190E3 /* TDABalances.m */; };
-		6341F6ED1E9ECF740032D56E /* TDAOptionChain.h in Headers */ = {isa = PBXBuildFile; fileRef = 6341F6EB1E9ECF740032D56E /* TDAOptionChain.h */; };
+		6341F6ED1E9ECF740032D56E /* TDAOptionChain.h in Headers */ = {isa = PBXBuildFile; fileRef = 6341F6EB1E9ECF740032D56E /* TDAOptionChain.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6341F6EE1E9ECF740032D56E /* TDAOptionChain.m in Sources */ = {isa = PBXBuildFile; fileRef = 6341F6EC1E9ECF740032D56E /* TDAOptionChain.m */; };
-		63AF127E1E99C93800995E5A /* TDAOrder.h in Headers */ = {isa = PBXBuildFile; fileRef = 63AF127C1E99C93800995E5A /* TDAOrder.h */; };
+		63AF127E1E99C93800995E5A /* TDAOrder.h in Headers */ = {isa = PBXBuildFile; fileRef = 63AF127C1E99C93800995E5A /* TDAOrder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		63AF127F1E99C93800995E5A /* TDAOrder.m in Sources */ = {isa = PBXBuildFile; fileRef = 63AF127D1E99C93800995E5A /* TDAOrder.m */; };
-		63AF12821E9AD26D00995E5A /* TDAQuote.h in Headers */ = {isa = PBXBuildFile; fileRef = 63AF12801E9AD26D00995E5A /* TDAQuote.h */; };
+		63AF12821E9AD26D00995E5A /* TDAQuote.h in Headers */ = {isa = PBXBuildFile; fileRef = 63AF12801E9AD26D00995E5A /* TDAQuote.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		63AF12831E9AD26D00995E5A /* TDAQuote.m in Sources */ = {isa = PBXBuildFile; fileRef = 63AF12811E9AD26D00995E5A /* TDAQuote.m */; };
-		63AF12861E9AEBFA00995E5A /* TDAPriceHistory.h in Headers */ = {isa = PBXBuildFile; fileRef = 63AF12841E9AEBFA00995E5A /* TDAPriceHistory.h */; };
+		63AF12861E9AEBFA00995E5A /* TDAPriceHistory.h in Headers */ = {isa = PBXBuildFile; fileRef = 63AF12841E9AEBFA00995E5A /* TDAPriceHistory.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		63AF12871E9AEBFA00995E5A /* TDAPriceHistory.m in Sources */ = {isa = PBXBuildFile; fileRef = 63AF12851E9AEBFA00995E5A /* TDAPriceHistory.m */; };
 		63C8F6361E92D930000EA4F8 /* obj-tda.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 63C8F62C1E92D92F000EA4F8 /* obj-tda.framework */; };
 		63C8F63B1E92D930000EA4F8 /* obj_tdaTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C8F63A1E92D930000EA4F8 /* obj_tdaTests.m */; };
 		63C8F63D1E92D930000EA4F8 /* obj-tda.h in Headers */ = {isa = PBXBuildFile; fileRef = 63C8F62F1E92D92F000EA4F8 /* obj-tda.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		63C8F6481E92D9E1000EA4F8 /* TDASession.h in Headers */ = {isa = PBXBuildFile; fileRef = 63C8F6461E92D9E1000EA4F8 /* TDASession.h */; };
+		63C8F6481E92D9E1000EA4F8 /* TDASession.h in Headers */ = {isa = PBXBuildFile; fileRef = 63C8F6461E92D9E1000EA4F8 /* TDASession.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		63C8F6491E92D9E1000EA4F8 /* TDASession.m in Sources */ = {isa = PBXBuildFile; fileRef = 63C8F6471E92D9E1000EA4F8 /* TDASession.m */; };
 /* End PBXBuildFile section */
 
@@ -37,6 +39,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		631AE1011EC36D1C00E51B70 /* TDAVolatilityHistory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TDAVolatilityHistory.h; sourceTree = "<group>"; };
+		631AE1021EC36D1C00E51B70 /* TDAVolatilityHistory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TDAVolatilityHistory.m; sourceTree = "<group>"; };
 		6339AF981E9D82A7007190E3 /* TDAPosition.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TDAPosition.h; sourceTree = "<group>"; };
 		6339AF991E9D82A7007190E3 /* TDAPosition.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TDAPosition.m; sourceTree = "<group>"; };
 		6339AF9C1E9D83EB007190E3 /* TDABalances.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TDABalances.h; sourceTree = "<group>"; };
@@ -115,6 +119,8 @@
 				6339AF9D1E9D83EB007190E3 /* TDABalances.m */,
 				6341F6EB1E9ECF740032D56E /* TDAOptionChain.h */,
 				6341F6EC1E9ECF740032D56E /* TDAOptionChain.m */,
+				631AE1011EC36D1C00E51B70 /* TDAVolatilityHistory.h */,
+				631AE1021EC36D1C00E51B70 /* TDAVolatilityHistory.m */,
 			);
 			path = "obj-tda";
 			sourceTree = "<group>";
@@ -142,6 +148,7 @@
 				63AF12861E9AEBFA00995E5A /* TDAPriceHistory.h in Headers */,
 				6339AF9A1E9D82A7007190E3 /* TDAPosition.h in Headers */,
 				63AF127E1E99C93800995E5A /* TDAOrder.h in Headers */,
+				631AE1031EC36D1C00E51B70 /* TDAVolatilityHistory.h in Headers */,
 				63AF12821E9AD26D00995E5A /* TDAQuote.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -249,6 +256,7 @@
 				6339AF9B1E9D82A7007190E3 /* TDAPosition.m in Sources */,
 				63C8F6491E92D9E1000EA4F8 /* TDASession.m in Sources */,
 				6341F6EE1E9ECF740032D56E /* TDAOptionChain.m in Sources */,
+				631AE1041EC36D1C00E51B70 /* TDAVolatilityHistory.m in Sources */,
 				63AF12871E9AEBFA00995E5A /* TDAPriceHistory.m in Sources */,
 				63AF12831E9AD26D00995E5A /* TDAQuote.m in Sources */,
 			);

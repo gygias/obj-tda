@@ -18,6 +18,7 @@
 #define KAURL "https://apis.tdameritrade.com/apps/KeepAlive?source=%@"
 #define OSURL "https://apis.tdameritrade.com/apps/100/OrderStatus?source=%@"
 #define OCURL "https://apis.tdameritrade.com/apps/200/OptionChain?source=%@&symbol=%@&quotes=true"
+#define VHURL "https://apis.tdameritrade.com/apps/100/VolatilityHistory?source=%@&requestidentifiertype=SYMBOL&requestvalue=%@"
 
 @implementation TDASession
 
@@ -366,6 +367,127 @@
     ph.bytes = bytes;
     
     return ph;
+}
+
+- (TDAVolatilityHistory *)getVolatilityHistory:(NSString *)symbol
+                                              :(BOOL)implied // "historical" if NO
+                                              :(IntervalType)intervalType
+                                              :(PeriodType)periodType
+                                              :(int)period
+                                              :(NSDate *)startDate
+                                              :(NSDate *)endDate
+                                              :(int)daysToExpiration
+                                              :(SurfaceType)surfaceType
+                                              :(int)surfaceVal1
+                                              :(int)surfaceVal2;
+
+{
+    NSString *urlString = [NSString stringWithFormat:@VHURL,_source,[symbol uppercaseString]];
+    
+    "&surfacetypeidentifier=&surfacetypevalue=";
+    urlString = [urlString stringByAppendingFormat:@"&volatilityhistorytype=%c",implied?'I':'H'];
+    
+    
+    
+    switch(intervalType) {
+        case MinuteInterval:
+            NSLog(@"minute interval invalid for vol hist");
+            return nil;
+            break;
+        case DayInterval:
+            urlString = [urlString stringByAppendingFormat:@"&intervaltype=DAILY"];
+            break;
+        case WeekInterval:
+            urlString = [urlString stringByAppendingFormat:@"&intervaltype=WEEKLY"];
+            break;
+        case MonthInterval:
+            urlString = [urlString stringByAppendingFormat:@"&intervaltype=MONTHLY"];
+            break;
+        default:
+            NSLog(@"invalid interval type");
+            return nil;
+    }
+    urlString = [urlString stringByAppendingFormat:@"&intervalduration=%d",1];
+    
+    switch(periodType) {
+        case DayPeriod:
+            if ( intervalType != DayInterval ) {
+                NSLog(@"interval must be day for daily period on vol hist");
+                return nil;
+            } else if ( ( period < 1 || period > 5 ) && period != 10 ) {
+                NSLog(@"invalid day period %d",period);
+                return nil;
+            }
+            urlString = [urlString stringByAppendingFormat:@"&periodtype=DAY"];
+            break;
+        case MonthPeriod:
+            if ( intervalType != DayInterval && intervalType != WeekInterval && intervalType != MonthInterval ) {
+                NSLog(@"interval must be day,week,month for month period on vol hist");
+                return nil;
+            } else if ( ( period < 1 || period > 3 ) && period != 6 ) {
+                NSLog(@"invalid month period %d",period);
+                return nil;
+            }
+            urlString = [urlString stringByAppendingFormat:@"&periodtype=MONTH"];
+            break;
+        case YearPeriod:
+            if ( intervalType != WeekInterval && intervalType != MonthInterval ) {
+                NSLog(@"interval must be week,month for year period on vol hist");
+                return nil;
+            } else if ( ( period < 1 || period > 3 ) && period != 5 && period != 10 && period != 15 && period != 20 ) {
+                NSLog(@"invalid year period %d",period);
+                return nil;
+            }
+            urlString = [urlString stringByAppendingFormat:@"&periodtype=YEAR"];
+            break;
+        case YTDPeriod:
+            if ( intervalType != WeekInterval && intervalType != MonthInterval ) {
+                NSLog(@"interval must be week,month for ytd period on vol hist");
+                return nil;
+            } else if ( period != 1 ) {
+                NSLog(@"invalid ytd period %d",period);
+                return nil;
+            }
+            urlString = [urlString stringByAppendingFormat:@"&periodtype=YTD"];
+            break;
+        default:
+            NSLog(@"invalid period type");
+            return nil;
+    }
+    urlString = [urlString stringByAppendingFormat:@"&period=%d",period];
+    
+    NSDateFormatter *dF = [NSDateFormatter new];
+    dF.dateFormat = @"yyyyMMdd";
+    if ( startDate )
+        urlString = [urlString stringByAppendingFormat:@"&startdate=%@",[dF stringFromDate:startDate]];
+    if ( endDate ) {
+        if ( ! startDate ) {
+            NSLog(@"invalid VH request: endDate requires startDate");
+            return nil;
+        }
+        urlString = [urlString stringByAppendingFormat:@"&enddate=%@",[dF stringFromDate:endDate]];
+    }
+    
+    if ( daysToExpiration == 0 )
+        daysToExpiration = 30;
+    else if ( ( daysToExpiration % 30 ) || ( daysToExpiration < 30 || daysToExpiration > 180 ) ) {
+        NSLog(@"invalid days to expiration for VH request");
+        return nil;
+    }
+    urlString = [urlString stringByAppendingFormat:@"&daystoexpiration=%d",daysToExpiration];
+    
+    NSURL *url = [NSURL URLWithString:urlString];
+    NSMutableURLRequest *req = [NSMutableURLRequest requestWithURL:url];
+    
+    NSData *bytes = nil;
+    BOOL okay = [self _submitRequest:req :&bytes :NO];
+    if ( ! okay ) {
+        NSLog(@"vol history request failed: %@",bytes?[[NSString alloc] initWithBytes:[bytes bytes] + 2 length:[bytes length] - 2 encoding:NSUTF8StringEncoding]:@"(null)");
+        return NO;
+    }
+    
+    TDAVolatilityHistory *history = [TDAVolatilityHistory new];
+    return history;
 }
 
 - (TDAOptionChain *)getOptionChainForSymbol:(NSString *)symbol

@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "6B98206AB216A6501C3E364DE45E42702F5899C3",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "6B98206AB216A6501C3E364DE45E42702F5899C3" : 9223372036854775807,
+    "B6C379C201DF4B6EB8A2FCC9B86A9388107CCFC2" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "CBFCFCBC-A9BB-4A56-B574-C737DBEAD528",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "6B98206AB216A6501C3E364DE45E42702F5899C3" : "obj-tda\/",
+    "B6C379C201DF4B6EB8A2FCC9B86A9388107CCFC2" : ""
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "obj-tda",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "obj-tda.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/gygias\/obj-tda.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "6B98206AB216A6501C3E364DE45E42702F5899C3"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/www.github.com\/gygias\/yammer.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "B6C379C201DF4B6EB8A2FCC9B86A9388107CCFC2"
+    }
+  ]
+}
