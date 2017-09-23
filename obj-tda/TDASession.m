@@ -210,16 +210,16 @@
     BOOL okay = [self _submitRequest:req :&responseXML :YES];
     if ( ! okay ) {
         NSLog(@"request failed");
-        return NO;
+        return nil;
     } else if ( ! responseXML ) {
         NSLog(@"response xml nil");
-        return NO;
+        return nil;
     }
     
     okay = [self _checkResult:responseXML :@"OK"];
     if ( ! okay ) {
         NSLog(@"%s: result not OK",__PRETTY_FUNCTION__);
-        return NO;
+        return nil;
     }
     
     NSError *error = nil;
@@ -353,7 +353,7 @@
     BOOL okay = [self _submitRequest:req :&bytes :NO];
     if ( ! okay ) {
         NSLog(@"request failed: %@",bytes?[[NSString alloc] initWithBytes:[bytes bytes] + 2 length:[bytes length] - 2 encoding:NSUTF8StringEncoding]:@"(null)");
-        return NO;
+        return nil;
     }
     
     // failure indicated in http response code checked in _submitRequest:
@@ -384,7 +384,8 @@
 {
     NSString *urlString = [NSString stringWithFormat:@VHURL,_source,[symbol uppercaseString]];
     
-    "&surfacetypeidentifier=&surfacetypevalue=";
+#warning todo
+    //"&surfacetypeidentifier=&surfacetypevalue=";
     urlString = [urlString stringByAppendingFormat:@"&volatilityhistorytype=%c",implied?'I':'H'];
     
     
@@ -483,7 +484,7 @@
     BOOL okay = [self _submitRequest:req :&bytes :NO];
     if ( ! okay ) {
         NSLog(@"vol history request failed: %@",bytes?[[NSString alloc] initWithBytes:[bytes bytes] + 2 length:[bytes length] - 2 encoding:NSUTF8StringEncoding]:@"(null)");
-        return NO;
+        return nil;
     }
     
     TDAVolatilityHistory *history = [TDAVolatilityHistory new];
@@ -500,16 +501,16 @@
     BOOL okay = [self _submitRequest:req :&responseXML :YES];
     if ( ! okay ) {
         NSLog(@"request failed");
-        return NO;
+        return nil;
     } else if ( ! responseXML ) {
         NSLog(@"response xml nil");
-        return NO;
+        return nil;
     }
     
     okay = [self _checkResult:responseXML :@"OK"];
     if ( ! okay ) {
         NSLog(@"%s: result not OK",__PRETTY_FUNCTION__);
-        return NO;
+        return nil;
     }
     
     NSError *error = nil;

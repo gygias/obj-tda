@@ -45,7 +45,7 @@
             break;
         default:
             NSLog(@"invalid order action");
-            return NO;
+            return nil;
     }
     
     [orderString appendFormat:@"~expire="];
@@ -61,7 +61,7 @@
             break;
         default:
             NSLog(@"invalid order tif");
-            return NO;
+            return nil;
     }
     
     [orderString appendFormat:@"~ordtype="];

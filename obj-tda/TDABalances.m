@@ -30,7 +30,7 @@
     NSXMLNode *cbXML = [[node nodesForXPath:@"//cash-balance" error:&error] firstObject];
     if ( ! cbXML ) {
         NSLog(@"failed to parse cash balances: %@",error);
-        return NO;
+        return nil;
     }
     
     balances.cashInitial = [[[[cbXML nodesForXPath:@"initial" error:&error] firstObject] stringValue] doubleValue];
@@ -55,7 +55,7 @@
     NSXMLNode *avXML = [[node nodesForXPath:@"//account-value" error:&error] firstObject];
     if ( ! avXML ) {
         NSLog(@"failed to parse cash balances: %@",error);
-        return NO;
+        return nil;
     }
     
     balances.accountInitial = [[[[avXML nodesForXPath:@"initial" error:&error] firstObject] stringValue] doubleValue];
